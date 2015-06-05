@@ -1,4 +1,7 @@
+require 'digest/sha1'
+require 'base64'
 require 'socket'
+require_relative 'websocket_connection'
 
 class WebSocketServer
 
@@ -15,7 +18,7 @@ class WebSocketServer
 
 	private
 
-	def send_hand_shake(socket)
+	def send_handshake(socket)
 		request_line = socket.gets
 		header = get_header(socket)
 		if (request_line =~ /GET #{@path} HTTP\/1.1/) && (header =~ /Sec-WebSocket-Key:(.*)\r\n/)
@@ -29,9 +32,6 @@ class WebSocketServer
 	end
 
 	WS_MAGIC_STRING = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
-
-	require 'digest/sha1'
-	require 'base64'
 
 	def create_websocket_accept(key)
 		digest = Digest::SHA1.digest(key + WS_MAGIC_STRING)
